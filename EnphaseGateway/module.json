@@ -9,7 +9,8 @@
         "{7F469A41-F10B-48C9-47A7-9940F32C5C45}"
     ],
     "implemented": [
-        "{9A752489-9D57-4990-585A-626292E75065}"
+        "{9A752489-9D57-4990-585A-626292E75065}",
+        "{E1E5D9C2-3A4B-4C5D-9E8F-ABCDEF123456}"
     ],
     "prefix": "ENPHASE",
     "url": "https://github.com/fhein/symcon-enphase-gateway"

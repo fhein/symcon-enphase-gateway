@@ -36,43 +36,28 @@ return [
             'type' => 'String',
             'default' => '[]',
         ],
+        'token_serial' => [
+            'type' => 'String',
+            'default' => '',
+        ],
+        'token_user' => [
+            'type' => 'String',
+            'default' => '',
+        ],
+        'token_access' => [
+            'type' => 'String',
+            'default' => '',
+        ],
+        'token_issue' => [
+            'type' => 'String',
+            'default' => '',
+        ],
+        'token_expiration' => [
+            'type' => 'String',
+            'default' => '',
+        ],
     ],
     'variables' => [
-        'user' => [
-            'type' => 'String',
-            'name' => 'User Name',
-            'profile' => '',
-            'position' => '1',
-            'enableAction' => false,
-        ],
-        'serial' => [
-            'type' => 'String',
-            'name' => 'Serial Number',
-            'profile' => '',
-            'position' => '2',
-            'enableAction' => false,
-        ],
-        'access' => [
-            'type' => 'String',
-            'name' => 'Access Level',
-            'profile' => '',
-            'position' => '3',
-            'enableAction' => false,
-        ],
-        'issue' => [
-            'type' => 'String',
-            'name' => 'Token Issue',
-            'profile' => '',
-            'position' => '4',
-            'enableAction' => false,
-        ],
-        'expiration' => [
-            'type' => 'String',
-            'name' => 'Token Expiration',
-            'profile' => '',
-            'position' => '5',
-            'enableAction' => false,
-        ],
     ],
     'profiles' => [
         'ENPHASE.UpdateInterval' => [
