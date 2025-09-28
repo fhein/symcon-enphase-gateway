@@ -1,0 +1,16 @@
+{
+    "id": "{CF98BDC5-3B29-FAE1-DF05-9F058575C2C7}",
+    "name": "EnphaseGateway",
+    "type": 1,
+    "vendor": "Enphase",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [
+        "{7F469A41-F10B-48C9-47A7-9940F32C5C45}"
+    ],
+    "implemented": [
+        "{9A752489-9D57-4990-585A-626292E75065}"
+    ],
+    "prefix": "ENPHASE",
+    "url": ""
+}

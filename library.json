@@ -1,0 +1,10 @@
+{
+    "id": "{372A9F14-ED34-7C4E-A0AE-BF25B6C78A3B}",
+    "name": "Enphase",
+    "author": "fhein",
+    "url": "https://github.com/fhein/symcon-enphase-gateway",
+    "compatibility": { "version": "5.5" },
+    "version": "1.0",
+    "build": 0,
+    "date": 0
+}

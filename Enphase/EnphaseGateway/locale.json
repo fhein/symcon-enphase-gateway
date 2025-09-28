@@ -1,0 +1,13 @@
+{
+    "translations": {
+        "de": {
+            "Gateway Serial Number": "Gateway Seriennummer",
+            "Enphase Password": "Enphase Passwort",
+            "Enphase User" : "Enphase Benutzer",
+            "Enphase API Token set." : "Enphase API Token verfügbar.",
+            "Enphase API Token not set. Enter valid user, password and gateway serial number and press \"Apply Changes\"." : "Enphase API Token nicht verfügbar. Geben Sie einen gültigen Benutzer, Passwort und Gateway Seriennummer ein und drücken Sie \"Änderungen übernehmen\".",
+            "Enphase IO connected" : "Enphase IO verbunden",
+            "Enphase IO disconnected" : "Enphase IO getrennt"
+        }
+    }
+}
