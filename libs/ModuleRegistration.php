@@ -1,6 +1,6 @@
 <?php
 
-class ModuleRegistration {
+class EnphaseModuleRegistration {
 
     protected $allowedPrefixes = [
         'Property' => ['type', 'default'],

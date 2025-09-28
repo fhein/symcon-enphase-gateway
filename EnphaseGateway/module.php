@@ -34,7 +34,7 @@ class EnphaseGateway extends IPSModule
 		try {
 			$moduleData = json_decode(file_get_contents(__DIR__ . '/module.json'), true);
 			$this->SetBuffer('EnphaseGateway.ChildRequirements', $moduleData['childRequirements'][0]);
-			$mr = new ModuleRegistration($this);
+			$mr = new EnphaseModuleRegistration($this);
 			$config = include __DIR__ . '/module.config.php';
 			$mr->Register($config);
 			$this->RegisterTimer('Update', 0, 'ENPHASE_Update($_IPS[\'TARGET\']);');	
@@ -48,7 +48,7 @@ class EnphaseGateway extends IPSModule
 		$this->SetTimerInterval('Update', 0);
 		$config = include __DIR__ . '/module.config.php';
 		if (isset($config['profiles'])) {
-			$mr = new ModuleRegistration($this);
+			$mr = new EnphaseModuleRegistration($this);
 			$mr->DeleteProfiles($config['profiles']);
 		}
 	}
