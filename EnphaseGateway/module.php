@@ -66,6 +66,8 @@ class EnphaseGateway extends IPSModule
 			$enabled = $this->ReadPropertyBoolean('enabled');
 			$updateInterval = $enabled ? $this->ReadPropertyInteger('updateInterval') : 0;
 			$this->SetTimerInterval('Update', $updateInterval * 1000);
+			// remove legacy variables that are now attributes
+			$this->cleanupLegacyVariables();
 			$this->SetStatus(102); // Set status to active if successful
 		} catch (Exception $e) {
 			$this->SetStatus(104); // Set an error status if initialization fails
@@ -91,6 +93,13 @@ class EnphaseGateway extends IPSModule
 					if (!$tokenRefreshed && $this->refreshToken()) {
 						$tokenRefreshed = true;
 						$result = $this->api->apiRequest($this->getConfig(), $endpoint);
+					}
+
+					private function cleanupLegacyVariables(): void
+					{
+						foreach (['user','serial','access','issue','expiration'] as $ident) {
+							try { if (@$this->GetIDForIdent($ident)) { @$this->UnregisterVariable($ident); } } catch (Throwable $t) { /* ignore */ }
+						}
 					}
 					if ($result['httpStatus'] === 401) {
 						$this->LogMessage(sprintf('API endpoint %s returned unauthorized (401).', $endpoint), KL_WARNING);
