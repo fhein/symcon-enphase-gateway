@@ -117,6 +117,7 @@ class EnphaseAPI
         if (!empty($postFields)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         }
+        curl_setopt($ch, CURLOPT_ENCODING, '');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 

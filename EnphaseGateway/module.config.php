@@ -36,6 +36,22 @@ return [
             'type' => 'String',
             'default' => '[]',
         ],
+        'raw_production' => [
+            'type' => 'String',
+            'default' => '[]',
+        ],
+        'raw_ivp_ensemble_inventory' => [
+            'type' => 'String',
+            'default' => '[]',
+        ],
+        'raw_ivp_meters_readings' => [
+            'type' => 'String',
+            'default' => '[]',
+        ],
+        'raw_ivp_livedata_status' => [
+            'type' => 'String',
+            'default' => '[]',
+        ],
         'token_serial' => [
             'type' => 'String',
             'default' => '',
@@ -121,13 +137,6 @@ return [
             'position' => 31,
             'enableAction' => false,
         ],
-        'batterySleepEnabled' => [
-            'type' => 'Boolean',
-            'name' => 'Batterie Schlafmodus',
-            'profile' => 'ENPHASE.YesNo',
-            'position' => 32,
-            'enableAction' => false,
-        ],
         'batteryLedStatus' => [
             'type' => 'Integer',
             'name' => 'Batterie LED Status',
@@ -160,24 +169,6 @@ return [
             'icon' => 'Battery',
             'suffix' => ' %',
             'digits' => 1,
-        ],
-        'ENPHASE.YesNo' => [
-            'type' => 'Boolean',
-            'icon' => '',
-            'associations' => [
-                [
-                    'value' => false,
-                    'text' => 'Nein',
-                    'icon' => 'Cross',
-                    'color' => -1,
-                ],
-                [
-                    'value' => true,
-                    'text' => 'Ja',
-                    'icon' => 'Ok',
-                    'color' => -1,
-                ],
-            ],
         ],
         'ENPHASE.LedStatus' => [
             'type' => 'Integer',
