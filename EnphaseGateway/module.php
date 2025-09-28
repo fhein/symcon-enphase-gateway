@@ -75,6 +75,19 @@ class EnphaseGateway extends IPSModule
 		}		
 	}
 
+	private function cleanupLegacyVariables(): void
+	{
+		foreach (['user','serial','access','issue','expiration'] as $ident) {
+			try {
+				if (@$this->GetIDForIdent($ident)) {
+					@$this->UnregisterVariable($ident);
+				}
+			} catch (Throwable $t) {
+				// ignore legacy cleanup issues
+			}
+		}
+	}
+
 	public function Update() {
 		// Poll Enphase endpoints and normalize data into a vendor-neutral payload
 		// The following endpoints are used:
@@ -93,13 +106,6 @@ class EnphaseGateway extends IPSModule
 					if (!$tokenRefreshed && $this->refreshToken()) {
 						$tokenRefreshed = true;
 						$result = $this->api->apiRequest($this->getConfig(), $endpoint);
-					}
-
-					private function cleanupLegacyVariables(): void
-					{
-						foreach (['user','serial','access','issue','expiration'] as $ident) {
-							try { if (@$this->GetIDForIdent($ident)) { @$this->UnregisterVariable($ident); } } catch (Throwable $t) { /* ignore */ }
-						}
 					}
 					if ($result['httpStatus'] === 401) {
 						$this->LogMessage(sprintf('API endpoint %s returned unauthorized (401).', $endpoint), KL_WARNING);
