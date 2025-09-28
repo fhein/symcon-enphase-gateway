@@ -160,8 +160,20 @@ class EnphaseGateway extends IPSModule
 					'battery' => [ 'soc_percent' => $soc, 'battery_power_w' => $battFlow, 'sleep_enabled' => $sleepEnabled, 'led_status' => $ledStatus, 'status' => $statusNeutral ],
 				],
 			];
+			$this->updateString('energyTimestamp', $data['energy']['timestamp']);
+			$this->updateString('sourceVendor', $data['energy']['source']['vendor'] ?? '');
+			$this->updateString('sourceModel', $data['energy']['source']['model'] ?? '');
+			$this->updateFloat('pvPower', $pvPower);
+			$this->updateFloat('siteHousePower', $houseLoad);
+			$this->updateFloat('siteGridPower', $gridPower);
+			$this->updateFloat('siteTotalConsumption', $totalConsumption);
+			$this->updateFloat('batterySoc', $soc);
+			$this->updateFloat('batteryPower', $battFlow);
+			$this->updateBoolean('batterySleepEnabled', $sleepEnabled);
+			$this->updateInteger('batteryLedStatus', $ledStatus);
+			$this->updateString('batteryStatus', $statusNeutral);
 			$data = json_encode($data);
-			$this->WriteAttributeString('pvdata', json_encode($data));
+			$this->WriteAttributeString('pvdata', $data);
 			$this->SendDataToChildren($data);
 			$this->SetStatus(102);
 		} catch (Exception $e) {
@@ -307,6 +319,47 @@ class EnphaseGateway extends IPSModule
 			$status = 'inaktiv';
 		}
 		return $status;
+	}
+
+	private function updateString(string $ident, ?string $value): void
+	{
+		if ($value === null) {
+			return;
+		}
+		$this->setModuleValue($ident, (string)$value);
+	}
+
+	private function updateFloat(string $ident, ?float $value): void
+	{
+		if ($value === null || !is_finite($value)) {
+			return;
+		}
+		$this->setModuleValue($ident, (float)$value);
+	}
+
+	private function updateBoolean(string $ident, ?bool $value): void
+	{
+		if ($value === null) {
+			return;
+		}
+		$this->setModuleValue($ident, (bool)$value);
+	}
+
+	private function updateInteger(string $ident, ?int $value): void
+	{
+		if ($value === null) {
+			return;
+		}
+		$this->setModuleValue($ident, (int)$value);
+	}
+
+	private function setModuleValue(string $ident, $value): void
+	{
+		try {
+			$this->SetValue($ident, $value);
+		} catch (Throwable $t) {
+			$this->SendDebug('EnphaseGateway', sprintf('Failed to set variable %s: %s', $ident, $t->getMessage()), 0);
+		}
 	}
 
 	protected function initApi()
