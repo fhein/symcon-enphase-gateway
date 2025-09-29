@@ -153,12 +153,22 @@ class EnphaseGateway extends IPSModule
 			$battFlow = $this->extractBatteryFromLivedata($livedata);
 			if ($battFlow === null) { $battFlow = $this->extractBatteryFromMeters($meters); }
 			if ($battFlow === null) { $battFlow = $this->extractProductionValue($prod, 'storage', ['battery', 'storage']); }
-			$houseLoad = $this->extractHouseFromLivedata($livedata);
-			if ($houseLoad === null) { $houseLoad = $this->extractHouseFromMeters($meters); }
-			if ($houseLoad === null && is_numeric($totalConsumption)) {
-				$houseLoad = $totalConsumption;
+			$houseFromLive = $this->extractHouseFromLivedata($livedata);
+			$houseFromMeters = $this->extractHouseFromMeters($meters);
+			$totalConsumptionValue = is_numeric($totalConsumption) ? (float)$totalConsumption : null;
+			$houseLoad = $houseFromLive;
+			if ($houseLoad === null) {
+				$houseLoad = $houseFromMeters;
 			}
-			$houseAdjustment = $this->adjustHouseLoadForBattery($houseLoad, $battFlow);
+			if ($houseLoad === null) {
+				$houseLoad = $totalConsumptionValue;
+			}
+			$housePrimary = $houseFromLive ?? $houseFromMeters;
+			$resolvedHouse = $this->resolveHouseLoad($housePrimary, $totalConsumptionValue, $pvPower, $gridPower, $battFlow);
+			if ($resolvedHouse !== null) {
+				$houseLoad = $resolvedHouse;
+			}
+			$houseAdjustment = $this->adjustHouseLoadForBattery($houseLoad, $battFlow, $totalConsumptionValue, $pvPower, $gridPower);
 			$houseLoad = $houseAdjustment['house'];
 			$soc = $this->extractSocFromInventory($inventory);
 			list($sleepEnabled, $ledStatus) = $this->extractBatteryFlagsFromInventory($inventory);
@@ -381,7 +391,7 @@ class EnphaseGateway extends IPSModule
 		return null;
 	}
 
-	private function adjustHouseLoadForBattery(?float $house, ?float $battery): array
+	private function adjustHouseLoadForBattery(?float $house, ?float $battery, ?float $total = null, ?float $pv = null, ?float $grid = null): array
 	{
 		$result = [
 			'house' => $house,
@@ -390,12 +400,51 @@ class EnphaseGateway extends IPSModule
 		if ($house === null || !is_finite($house) || $battery === null || !is_finite($battery)) {
 			return $result;
 		}
-		if ($battery < 0) {
-			$removed = min($house, abs($battery));
-			$result['house'] = max(0.0, $house + $battery);
-			$result['removed'] = max(0.0, $removed);
+		if ($battery >= 0.0) {
+			return $result;
+		}
+		$expected = $this->estimateHouseLoad($total, $pv, $grid, $battery);
+		if ($expected === null) {
+			return $result;
+		}
+		$candidate = max(0.0, $house + $battery);
+		$diffOriginal = abs($house - $expected);
+		$diffAdjusted = abs($candidate - $expected);
+		$tolerance = max(0.05 * max(abs($expected), 1.0), 10.0);
+		if (($diffAdjusted + $tolerance) < $diffOriginal) {
+			$removed = max(0.0, min($house, abs($battery)));
+			$result['house'] = $candidate;
+			$result['removed'] = $removed;
 		}
 		return $result;
+	}
+
+	private function estimateHouseLoad(?float $total, ?float $pv, ?float $grid, ?float $battery): ?float
+	{
+		if ($total !== null && is_finite($total)) {
+			return max(0.0, $total);
+		}
+		$components = [];
+		if ($pv !== null && is_finite($pv)) {
+			$components[] = $pv;
+		}
+		if ($grid !== null && is_finite($grid)) {
+			$components[] = $grid;
+		}
+		if ($battery !== null && is_finite($battery)) {
+			$components[] = $battery;
+		}
+		if (count($components) < 2) {
+			return null;
+		}
+		$sum = array_sum($components);
+		if (!is_finite($sum)) {
+			return null;
+		}
+		if (abs($sum) < 1e-3) {
+			return 0.0;
+		}
+		return max(0.0, $sum);
 	}
 
 	private function extractHouseFromMeters($meters) {
