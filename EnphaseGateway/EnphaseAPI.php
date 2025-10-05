@@ -225,10 +225,14 @@ class EnphaseAPI
         try {
             $session_id = $this->getSessionId($config);
             $web_token = $this->fetchApiToken($config, $session_id);
+            // Avoid logging full tokens; keep a short preview for debugging without leaking secrets
+            $preview = is_string($web_token) && strlen($web_token) > 8
+                ? substr($web_token, 0, 4) . '...' . substr($web_token, -4)
+                : '[masked]';
             if (function_exists('IPS_LogMessage')) {
-                IPS_LogMessage('EnphaseGateway', 'Retrieved API token: ' . $web_token);
+                IPS_LogMessage('EnphaseGateway', 'Retrieved API token (masked): ' . $preview);
             } else {
-                error_log('EnphaseGateway: Retrieved API token: ' . $web_token);
+                error_log('EnphaseGateway: Retrieved API token (masked): ' . $preview);
             }
         } catch (Exception $e) {
             throw new Exception(self::EXCEPTIONS[1009], 1009);
